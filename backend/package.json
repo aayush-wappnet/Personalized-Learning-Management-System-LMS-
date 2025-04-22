@@ -23,6 +23,7 @@
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "cloudinary": "^2.6.0",
     "dotenv": "^16.5.0",
     "fastify": "^5.3.2",
     "fastify-cors": "^6.0.3",
@@ -36,6 +37,7 @@
     "pg": "^8.14.1",
     "redis": "^4.6.10",
     "reflect-metadata": "^0.2.2",
+    "streamifier": "^0.1.1",
     "typeorm": "^0.3.22",
     "zod": "^3.24.3"
   },
@@ -45,6 +47,7 @@
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^20.17.30",
     "@types/nodemailer": "^6.4.17",
+    "@types/streamifier": "^0.1.2",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "eslint": "^8.57.1",

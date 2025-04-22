@@ -27,4 +27,4 @@ export class QuizAttempt {
 
   @UpdateDateColumn()
   updatedAt!: Date;
-} 
+}

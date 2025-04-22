@@ -14,17 +14,10 @@ export const registerSchema = {
   }),
   response: {
     201: Type.Object({
-      user: Type.Object({
-        id: Type.String(),
-        firstName: Type.String(),
-        lastName: Type.String(),
-        email: Type.String(),
-        role: Type.String(),
-        isActive: Type.Boolean(),
-        createdAt: Type.String(),
-        updatedAt: Type.String()
-      }),
       token: Type.String()
+    }),
+    400: Type.Object({
+      message: Type.String()
     })
   }
 };
@@ -36,17 +29,10 @@ export const loginSchema = {
   }),
   response: {
     200: Type.Object({
-      user: Type.Object({
-        id: Type.String(),
-        firstName: Type.String(),
-        lastName: Type.String(),
-        email: Type.String(),
-        role: Type.String(),
-        isActive: Type.Boolean(),
-        createdAt: Type.String(),
-        updatedAt: Type.String()
-      }),
       token: Type.String()
+    }),
+    401: Type.Object({
+      message: Type.String()
     })
   }
-}; 
+};

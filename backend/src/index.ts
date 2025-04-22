@@ -2,12 +2,13 @@ import Fastify, { FastifyInstance } from 'fastify';
 import dotenv from 'dotenv';
 import cors from '@fastify/cors';
 import jwt from '@fastify/jwt';
-import multipart from '@fastify/multipart';
 import staticPlugin from '@fastify/static';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { dbPlugin } from './config/database';
 import authRoutes from './routes/auth.routes';
 import authPlugin from './plugins/auth';
+import courseRoutes from './routes/course.routes';
+import uploadPlugin from './plugins/upload';
 import path from 'path';
 
 dotenv.config();
@@ -18,36 +19,36 @@ const server: FastifyInstance = Fastify({
 
 // Register plugins
 async function registerPlugins() {
-  // Core plugins
   await server.register(cors, {
     origin: true,
     credentials: true,
   });
 
   await server.register(jwt, {
-    secret: process.env.JWT_SECRET!,
+    secret: process.env.JWT_SECRET!, // Ensure this is set in .env
+    decode: { complete: true }, // Ensure token decoding includes payload
+    verify: { extractToken: (req) => req.headers.authorization?.replace('Bearer ', '') } // Extract token
   });
 
-  await server.register(multipart, {
-    limits: {
-      fileSize: 5 * 1024 * 1024, // 5MB
-    }
-  });
-
-  // Static file serving for uploads
   await server.register(staticPlugin, {
     root: path.join(__dirname, '../uploads'),
     prefix: '/uploads/',
   });
 
-  // Database plugin
   await server.register(dbPlugin);
 
-  // Auth plugin
   await server.register(authPlugin);
 
-  // Routes
+  await server.register(uploadPlugin);
+
   await server.register(authRoutes, { prefix: '/api/auth' });
+  await server.register(courseRoutes, { prefix: '/api' });
+
+  // Debug route to check user
+  server.get('/debug', { preHandler: server.authenticate }, async (request) => {
+    server.log.info('Debug User:', request.user);
+    return { user: request.user };
+  });
 }
 
 // Health check route
@@ -71,4 +72,4 @@ const start = async () => {
   }
 };
 
-start(); 
+start();

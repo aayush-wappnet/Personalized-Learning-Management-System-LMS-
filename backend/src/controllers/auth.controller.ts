@@ -34,31 +34,22 @@ export class AuthController {
     reply: FastifyReply
   ): Promise<FastifyReply> {
     try {
-      // Validate role if provided
       if (request.body.role && !Object.values(Role).includes(request.body.role)) {
-        return reply.code(400).send({
-          message: 'Invalid role provided'
-        });
+        return reply.code(400).send({ message: 'Invalid role provided' });
       }
 
       const user = await this.authService.register(request.body);
-      const token = await reply.jwtSign({ 
+      const token = await reply.jwtSign({
         id: user.id,
         email: user.email,
-        role: user.role 
-      }, {
-        expiresIn: process.env.JWT_EXPIRES_IN || '1d'
-      });
+        role: user.role
+      }, { expiresIn: process.env.JWT_EXPIRES_IN || '1d' });
 
       return reply.code(201).send({ token });
     } catch (error: any) {
-      // Handle specific errors
-      if (error.code === '23505') { // PostgreSQL unique violation error
-        return reply.code(400).send({
-          message: 'Email already exists'
-        });
+      if (error.code === '23505') {
+        return reply.code(400).send({ message: 'Email already exists' });
       }
-
       return reply.code(error.statusCode || 500).send({
         message: error.message || 'Internal Server Error',
         error: process.env.NODE_ENV === 'development' ? error : undefined
@@ -73,30 +64,27 @@ export class AuthController {
     try {
       const { email, password } = request.body;
       const user = await this.authService.validateUser(email, password);
-      const token = await reply.jwtSign({ 
+      const token = await reply.jwtSign({
         id: user.id,
         email: user.email,
-        role: user.role 
-      }, {
-        expiresIn: process.env.JWT_EXPIRES_IN || '1d'
-      });
+        role: user.role
+      }, { expiresIn: process.env.JWT_EXPIRES_IN || '1d' });
 
       return reply.send({ token });
     } catch (error: any) {
-      return reply.code(error.statusCode || 500).send({
+      return reply.code(error.statusCode || 401).send({
         message: error.message || 'Invalid credentials',
         error: process.env.NODE_ENV === 'development' ? error : undefined
       });
     }
   }
 
-  // Add method to get current user
   async getCurrentUser(
     request: FastifyRequest,
     reply: FastifyReply
   ): Promise<FastifyReply> {
     try {
-      const user = await this.authService.findUserById(request.user.id);
+      const user = await this.authService.findUserById(Number(request.user.id));
       return reply.send({ user: user.toJSON() });
     } catch (error: any) {
       return reply.code(error.statusCode || 500).send({
@@ -104,4 +92,17 @@ export class AuthController {
       });
     }
   }
-} 
+
+  async logout(
+    request: FastifyRequest,
+    reply: FastifyReply
+  ): Promise<FastifyReply> {
+    try {
+      return reply.send({ message: 'Logged out successfully' });
+    } catch (error: any) {
+      return reply.code(500).send({
+        message: error.message || 'Logout failed'
+      });
+    }
+  }
+}

@@ -3,6 +3,7 @@ import { Role } from '../types/roles';
 import { hash } from 'bcrypt';
 import { Course } from './Course';
 import { Enrollment } from './Enrollment';
+import { QuizAttempt } from './QuizAttempt';
 
 @Entity('users')
 export class User {
@@ -36,6 +37,9 @@ export class User {
 
   @OneToMany(() => Enrollment, enrollment => enrollment.student)
   enrollments!: Enrollment[];
+
+  @OneToMany(() => QuizAttempt, quizAttempt => quizAttempt.student)
+  quizAttempts!: QuizAttempt[];
 
   @CreateDateColumn()
   createdAt!: Date;
@@ -71,4 +75,4 @@ export class User {
       fullName: this.fullName
     };
   }
-} 
+}

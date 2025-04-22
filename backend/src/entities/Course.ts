@@ -17,8 +17,8 @@ export class Course {
   @Column({ default: true })
   isActive!: boolean;
 
-  @Column({ default: 0 })
-  price!: number;
+  @Column({ default: false })
+  isApproved!: boolean; // New field for admin approval
 
   @Column({ nullable: true })
   thumbnailUrl?: string;
@@ -37,4 +37,4 @@ export class Course {
 
   @UpdateDateColumn()
   updatedAt!: Date;
-} 
+}

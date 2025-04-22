@@ -3,6 +3,7 @@ import { User } from '../entities/User';
 import { compare } from 'bcrypt';
 import { FastifyError } from 'fastify';
 import { RegisterBody } from '../controllers/auth.controller';
+import { FindOptionsWhere } from 'typeorm';
 
 export class AuthService {
   private userRepository = AppDataSource.getRepository(User);
@@ -10,15 +11,11 @@ export class AuthService {
   async register(userData: RegisterBody): Promise<User> {
     try {
       const existingUser = await this.userRepository.findOne({
-        where: { email: userData.email }
+        where: { email: userData.email } as FindOptionsWhere<User>
       });
 
       if (existingUser) {
-        throw { 
-          statusCode: 400, 
-          message: 'User already exists',
-          code: '23505' // PostgreSQL unique violation code
-        } as FastifyError;
+        throw { statusCode: 400, message: 'User already exists', code: '23505' } as FastifyError;
       }
 
       const user = this.userRepository.create(userData);
@@ -30,7 +27,7 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<User> {
     const user = await this.userRepository.findOne({
-      where: { email }
+      where: { email } as FindOptionsWhere<User>
     });
 
     if (!user) {
@@ -45,9 +42,9 @@ export class AuthService {
     return user;
   }
 
-  async findUserById(id: string): Promise<User> {
+  async findUserById(id: number): Promise<User> {
     const user = await this.userRepository.findOne({
-      where: { id }
+      where: { id } as FindOptionsWhere<User>
     });
 
     if (!user) {
@@ -56,4 +53,4 @@ export class AuthService {
 
     return user;
   }
-} 
+}
